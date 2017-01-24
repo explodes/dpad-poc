@@ -16,15 +16,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
-public class MainActivity extends AppCompatActivity {
+import static explod.io.dpadhelper.R.id.pager;
+
+public class MainActivity extends AppCompatActivity implements HasFocusWithinViewPager {
 
 	private static final String TAG = "MainActivity";
 
 	private final FocusHandler mFocusHandler = new FocusHandler(this);
+
+	private LockingViewPager mLockingViewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +37,38 @@ public class MainActivity extends AppCompatActivity {
 
 		setContentView(R.layout.activity_main);
 
-		ViewPager pager = (ViewPager) findViewById(R.id.pager);
-		pager.setAdapter(new MyPagerAdapter());
+		mLockingViewPager = (LockingViewPager) findViewById(pager);
+		mLockingViewPager.setAdapter(new MyPagerAdapter());
 
 		mFocusHandler.sendEmptyMessage(0);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mLockingViewPager.setHasFocusWithinView(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mLockingViewPager.setHasFocusWithinView(null);
+	}
+
+	@Override
+	public boolean hasFocusWithinViewPager() {
+		View focus = getCurrentFocus();
+		while (focus != null) {
+			if (focus instanceof ViewPager) {
+				return true;
+			}
+			ViewParent parent = focus.getParent();
+			if (!(parent instanceof View)) {
+				return false;
+			}
+			focus = (View) parent;
+		}
+		return false;
 	}
 
 	public static class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -166,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	private static class MyPagerAdapter extends PagerAdapter {
+	private class MyPagerAdapter extends PagerAdapter {
 
 		@Override
 		public Object instantiateItem(ViewGroup container, int position) {
@@ -193,6 +226,5 @@ public class MainActivity extends AppCompatActivity {
 		public boolean isViewFromObject(View view, Object object) {
 			return view == object;
 		}
-
 	}
 }
