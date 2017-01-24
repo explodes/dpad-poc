@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/text_width"
+    android:layout_height="@dimen/text_height"
+    android:background="#ffcccc77"
+    android:focusable="true"
+    android:foreground="@drawable/focusable_foreground_bordered"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="12dp"
+    android:paddingRight="12dp"
+    tools:text="(5x6)" />
