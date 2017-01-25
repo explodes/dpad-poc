@@ -8,7 +8,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,20 +15,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
-import static explod.io.dpadhelper.R.id.pager;
-
-public class MainActivity extends AppCompatActivity implements HasFocusWithinViewPager {
+public class MainActivity extends AppCompatActivity {
 
 	private static final String TAG = "MainActivity";
 
 	private final FocusHandler mFocusHandler = new FocusHandler(this);
-
-	private LockingViewPager mLockingViewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,38 +31,10 @@ public class MainActivity extends AppCompatActivity implements HasFocusWithinVie
 
 		setContentView(R.layout.activity_main);
 
-		mLockingViewPager = (LockingViewPager) findViewById(pager);
-		mLockingViewPager.setAdapter(new MyPagerAdapter());
+		DPadViewPager pager = (explod.io.dpadhelper.DPadViewPager) findViewById(R.id.pager);
+		pager.setAdapter(new MyPagerAdapter());
 
 		mFocusHandler.sendEmptyMessage(0);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		mLockingViewPager.setHasFocusWithinView(this);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mLockingViewPager.setHasFocusWithinView(null);
-	}
-
-	@Override
-	public boolean hasFocusWithinViewPager() {
-		View focus = getCurrentFocus();
-		while (focus != null) {
-			if (focus instanceof ViewPager) {
-				return true;
-			}
-			ViewParent parent = focus.getParent();
-			if (!(parent instanceof View)) {
-				return false;
-			}
-			focus = (View) parent;
-		}
-		return false;
 	}
 
 	public static class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
